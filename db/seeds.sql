@@ -8,7 +8,7 @@ VALUES
 
 INSERT INTO role(title, salary, department_id)
 VALUES
-('Full Stack Developer', 90000, 1),
+('Full Stack Developer', 90000, (select id from department where name ='IT')),
 ('Software Engineer', 120000, 1),
 ('Accountant', 75000, 2),
 ('Financial Analyst', 80000, 2),
@@ -23,8 +23,8 @@ VALUES
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
 VALUES
 ('Mabel', 'Miller', 1 , null),
-('John', 'Gomez', 2, 3),
-('William', 'Toz', 3, null),
+ ('John', 'Gomez', (select id from role where title ='Software Engineer'), 1),-- (select id from employee where first_name ='Mabel'));
+ ('William', 'Toz', 3, null),
 ('Ana', 'West', 4, 2),
 ('Katherine', 'Jacobs', 6, null),
 ('Fay', 'Beneventi', 8, 4),

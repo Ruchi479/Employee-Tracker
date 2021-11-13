@@ -72,7 +72,27 @@ function startPrompt(){
 
 // Query database to view all departments
 function viewAllDepartments(){
-    db.query('SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;', function(err,results){
+    db.query('SELECT department.id AS ID, employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;', function(err,results){
+        if (err) throw err;
+        console.table(results);
+        startPrompt();
+    });
+}
+
+//view all Roles function
+function viewAllRoles(){
+    let qry = 'SELECT role.id AS Role_ID, role.title AS Title, role.salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id';
+    db.query(qry, function(err,results){
+        if (err) throw err;
+        console.table(results);
+        startPrompt();
+    });
+}
+
+//view all Employee function
+function viewAllEmployees(){
+    let qry = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT (manager.first_name, " ", manager.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id';
+    db.query(qry, function(err,results){
         if (err) throw err;
         console.table(results);
         startPrompt();

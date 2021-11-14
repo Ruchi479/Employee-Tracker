@@ -251,7 +251,7 @@ function addEmployee(){
 
 //function to update an employeeRole
 function updateEmployeeRole(){
-    let empNameArray =[];
+    let empNameArray = [];
     let qry = "SELECT * FROM employee";
     db.query(qry, (err, results) => {
         if(err) throw err;
@@ -285,7 +285,7 @@ function updateRole(empID){
                 type:"list",
                 message: "What is the employee's new Role",
                 choices: function(){
-                    for(let j=0; j< results2.length; j++){
+                    for(let j=0; j < results2.length; j++){
                         roleArray2.push(results2[j].title);
                     }
                     return roleArray2;

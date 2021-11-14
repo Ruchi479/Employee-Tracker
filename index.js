@@ -92,7 +92,7 @@ function startPrompt(){
                 viewDeptBudget();
                 break;
             case "Quit":
-                exitPrompt();
+                db.end();
                 break;
         }
     });

@@ -17,7 +17,7 @@ The user should clone the repository from GitHub. This application requires Node
 ## Usage 
 This application will allow users to view, add, and edit employees, roles, departments & managers and can also view the budgets. 
 
-View walk through video here to demonstrates the usage of application -[Screencastify](https://watch.screencastify.com/v/f0zyXM3MbN6fKyzFQrAZ)
+View walk through video here to demonstrates the usage of application -[Screencastify](https://watch.screencastify.com/v/Ur9cYNkEshfjNab1uQb8)
 
 ## Screenshots 
 ![Employee Tracker](./assets/images/img.jpg)

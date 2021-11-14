@@ -390,31 +390,20 @@ function deleteDepartment(){
 
 //function to delete role
 function DeleteRole(){
-    let roleArray = [];
-    let qry = 'SELECT * FROM role';
-    db.query(qry, (err, results) => {
-        if(err) throw err;
-        inquirer.prompt([
-            {
-                name:'role',
-                type: 'list',
-                message: "What role do you want to delete ?",
-                choices: function () {
-                    for(var i = 0; i< results.length; i++){
-                        roleArray.push(results[i].title);
-                    }
-                    return roleArray;
-                },
-            },
+    inquirer.prompt([
+        {
+            name:'role',
+            type: 'input',
+            message: "Enter thr roleId to delete ?",
+        },
         ]).then((answer) => {
-            let roleID = roleArray.indexOf(answer.role) + 1;
-            let qry2 ="DELETE FROM role WHERE id = ?";
-            db.query(qry2, [roleID], (err, result2) => {
+            console.log(answer.role);
+            let qry ="DELETE FROM role WHERE id = ?";
+            db.query(qry, answer.role, (err, results) => {
                 if(err) throw err;
                 console.log("Successfully Role deleted");
                 viewAllRoles();
             });
-        });
     });
 }
 

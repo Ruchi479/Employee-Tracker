@@ -33,8 +33,8 @@ function startPrompt(){
                 "View all Employees By Departments",
                 "View all Roles",
                 "View all Employees",
-                "Add a Department",
                 "Add a Role",
+                "Add a Department",
                 "Add an Employee",
                 "Update an Employee role",
                 "Quit",
@@ -99,6 +99,126 @@ function viewAllEmployees(){
     });
 }
 
+//function to add a department
+function addDepartment(){
+    inquirer.prompt([
+        {
+            name:"addDept",
+            type: "input",
+            message: "What department would you like to add ?",
+        }
+    ]).then(answer => {
+        let qry = "INSERT INTO department (name) VALUES (?)";
+        db.query(qry, answer.addDept, (err, result) => {
+            if (err) throw err;
+            console.log(`Added ${answer.addDept} to departments`);
+            viewAllDepartments();
+        }); 
+    });
+}
+
+//function to addRoles
+function addRole(){
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'role',
+            message: "What role would you like to add ?",
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: "What is the salary of this role ?",
+        }       
+    ]).then(answer => {
+        const parms = [answer.role, answer.salary];
+
+        //grap dept from department table
+        const roleSel = `SELECT name, id FROM department`;
+        db.query(roleSel, function(err, data){
+            if(err) throw err;
+            const dept = data.map(({name, id}) => ({name: name, value: id}));
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'dept',
+                    message: "What department would you like to add of this role ?",
+                    choices: dept
+                }
+            ]).then(deptChoice => {
+                const dept = deptChoice.dept; //add the value of new dept in dept
+                parms.push(dept); //adding role , salary in dept
+
+                const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+
+                db.query(sql, parms, (err, result) => {
+                    if(err) throw err;
+                    console.log('`Added New role to roles!`');
+                    viewAllRoles();
+                });
+            });
+        });
+    });
+};
+
+//function to add employee
+function addEmployee(){
+    let roleArray = [];
+    let empArray = [];
+    let qryR = 'SELECT * FROM role';
+    db.query(qryR, (err, results) => {
+        if (err) throw err;
+        let qryE = 'SELECT * FROM employee';
+        db.query(qryE, (err, resultsE) => {
+            if (err) throw err;
+            inquirer.prompt([
+                {
+                    name:"firstname",
+                    type:"input",
+                    message: "Enter the first name of employee",
+                },
+                {
+                    name:"lastname",
+                    type:"input",
+                    message: "Enter the last name of employee",
+                },
+                {
+                    name:"role",
+                    type:"list",
+                    message: "What is the employee's Role",
+                    choices: function(){
+                        for(let i=0; i< results.length; i++){
+                            roleArray.push(results[i].title)
+                        }
+                        return roleArray;
+                    },
+                },
+                {
+                    name:"managerID",
+                    type:"list",
+                    message: "Who is the employee's Manager ?",
+                    choices: function(){
+                        for(let j=0; j< resultsE.length; j++){
+                            empArray.push(resultsE[j].first_name)
+                        }
+                        return empArray;
+                    },
+                },
+            ]).then((answer) => {
+                let manager_ID = empArray.indexOf(answer.managerID) + 1;
+                let role_ID = roleArray.indexOf(answer.role) + 1;
+                let qry = "INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES( ?, ?, ?, ?)";
+                db.query(qry, [answer.firstname, answer.lastname, role_ID, manager_ID],
+                    (err, results) => {
+                        if (err) throw err;
+                        console.log("Employee added successfully");
+                        viewAllEmployees();
+                    });
+            });
+        });
+    });
+}
 
         
    

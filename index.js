@@ -256,46 +256,43 @@ function updateEmployeeRole(){
         if(err) throw err;
         inquirer.prompt([
             {
-                name:"employee_name",
+                name:"employeename",
                 type:"list",
                 message: "Which employee would you like to update",
                 choices: function(){
-                    for(let i=0; i< results.length; i++){
+                    for(let i=0; i < results.length; i++){
                         empNameArray.push(results[i].id + "." + results[i].first_name + " " + results[i].last_name);
                     }
                     return empNameArray;
                 }, 
             },
         ]).then((answer) => {
-            let empID = empNameArray.indexOf(answer.employee_name) + 1;
-            console.log(empID);
-            updateDetails(empID);
+            let empID = empNameArray.indexOf(answer.employeename) + 1;
+            updateRole(empID);
         });
     });
 }
 
-function updateDetails(empID){
+function updateRole(empID){
     let roleArray2 = [];
     let qry2 = "SELECT * FROM role";
     db.query(qry2, (err, results2) => {
         if(err) throw err;
         inquirer.prompt([
             {
-                name:"role",
+                name:"roletitle",
                 type:"list",
                 message: "What is the employee's new Role",
                 choices: function(){
                     for(let j=0; j< results2.length; j++){
-                        roleArray2.push(results2[j].role);
+                        roleArray2.push(results2[j].title);
                     }
                     return roleArray2;
                 },  
             },
         ]).then((answer) => {
-            let newRole = answer.role;
+            let newRole = answer.roletitle;
             let roleID = roleArray2.indexOf(newRole) + 1;
-            console.log(newRole);
-            console.log(roleID);
             let qry = "UPDATE employee SET role_id = ? WHERE employee.id = ?";
             db.query(qry, [roleID, empID], (err, results) => {
                 if(err) throw err;
@@ -305,6 +302,61 @@ function updateDetails(empID){
             });
         });
     });
+}
+
+//function to update manager
+function updateEmployeeManager(){
+    let emplSel = "SELECT * FROM employee";
+    db.query(emplSel, (err, data) => {
+        if(err) throw err;
+        let employees = data.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value:id}));
+
+        inquirer.prompt([
+            {
+                type:'list',
+                name: 'name',
+                message: 'Which employee would you like to update ?',
+                choices: employees
+            }
+        ]).then(answer => {
+            const employee = answer.name;
+            const parms =[];
+            parms.push(employee);
+
+            const managerSel = "SELECT * FROM employee";
+            db.query(managerSel, (err, data)=> {
+                if(err) throw err;
+
+                let managers = data.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value:id}));
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'manager',
+                        message: "Who is the employee's manager ?",
+                        choices: managers
+                    }
+                ]).then(answer => {
+                    const manager = answer.manager;
+                    parms.push(manager);
+
+                    let employee = parms[0]
+                    parms[0] = manager
+                    parms[1] = employee
+
+                    const qry = "UPDATE employee SET manager_id = ? WHERE id = ?";
+
+                    db.query(qry, parms, (err, result) => {
+                        if(err) throw err;
+                        console.log("Employee has been updated!");
+                        viewAllEmployees();
+                    })
+
+
+            
+                })
+            })
+        })
+    })
 }
 
 

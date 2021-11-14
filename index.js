@@ -248,6 +248,66 @@ function addEmployee(){
     });
 }
 
+//function to update an employeeRole
+function updateEmployeeRole(){
+    let empNameArray =[];
+    let qry = "SELECT * FROM employee";
+    db.query(qry, (err, results) => {
+        if(err) throw err;
+        inquirer.prompt([
+            {
+                name:"employee_name",
+                type:"list",
+                message: "Which employee would you like to update",
+                choices: function(){
+                    for(let i=0; i< results.length; i++){
+                        empNameArray.push(results[i].id + "." + results[i].first_name + " " + results[i].last_name);
+                    }
+                    return empNameArray;
+                }, 
+            },
+        ]).then((answer) => {
+            let empID = empNameArray.indexOf(answer.employee_name) + 1;
+            console.log(empID);
+            updateDetails(empID);
+        });
+    });
+}
+
+function updateDetails(empID){
+    let roleArray2 = [];
+    let qry2 = "SELECT * FROM role";
+    db.query(qry2, (err, results2) => {
+        if(err) throw err;
+        inquirer.prompt([
+            {
+                name:"role",
+                type:"list",
+                message: "What is the employee's new Role",
+                choices: function(){
+                    for(let j=0; j< results2.length; j++){
+                        roleArray2.push(results2[j].role);
+                    }
+                    return roleArray2;
+                },  
+            },
+        ]).then((answer) => {
+            let newRole = answer.role;
+            let roleID = roleArray2.indexOf(newRole) + 1;
+            console.log(newRole);
+            console.log(roleID);
+            let qry = "UPDATE employee SET role_id = ? WHERE employee.id = ?";
+            db.query(qry, [roleID, empID], (err, results) => {
+                if(err) throw err;
+                console.log("Employee Role Updated");
+                console.table(results);
+                viewAllEmployees();
+            });
+        });
+    });
+}
+
+
 
         
    

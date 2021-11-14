@@ -100,7 +100,8 @@ function startPrompt(){
 
 // Query database to view all departments
 function viewAllDepartments(){
-    db.query('SELECT department.id AS ID, employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;', function(err,results){
+    console.log('Showing all departments...\n');
+    db.query('SELECT department.id AS ID, department.name AS Department FROM department', function(err, results){
         if (err) throw err;
         console.table(results);
         startPrompt();
@@ -128,7 +129,7 @@ function viewAllEmployees(){
 }
 
 //function to add a department
-function addDepartment(){
+function addDepartment() {
     inquirer.prompt([
         {
             name:"addDept",
@@ -137,7 +138,7 @@ function addDepartment(){
         }
     ]).then(answer => {
         let qry = "INSERT INTO department (name) VALUES (?)";
-        db.query(qry, answer.addDept, (err, result) => {
+        db.query(qry, answer.addDept, (err, results) => {
             if (err) throw err;
             console.log(`Added ${answer.addDept} to departments`);
             viewAllDepartments();
@@ -410,7 +411,7 @@ function DeleteRole(){
             let qry2 ="DELETE FROM role WHERE id = ?";
             db.query(qry2, [roleID], (err, result2) => {
                 if(err) throw err;
-                console.log("successfully Role deleted");
+                console.log("Successfully Role deleted");
                 viewAllRoles();
             });
         });
@@ -447,7 +448,7 @@ function DeleteEmployee(){
     });
 }
 
-//function to view employee by department
+//function to view employees by department
 function viewByDept(){
     console.log('Showing employees by departments...\n');
     let sel = 'SELECT employee.first_name, employee.last_name, department.name AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id';
@@ -458,7 +459,7 @@ function viewByDept(){
     });
 };
 
-//function to view employee by Manager
+//function to view employees by Manager
 function viewByManager(){
     console.log('Showing employees by Manager...\n');
     let sel = 'SELECT employee.first_name, employee.last_name, CONCAT (manager.first_name, " ", manager.last_name) AS Manager FROM employee LEFT JOIN employee manager ON employee.manager_id = manager.id';
@@ -471,15 +472,51 @@ function viewByManager(){
 
 
 ////function to view department budget
+// function viewDeptBudget(){
+//     console.log('Showing budget by departments...\n');
+//     let sel = 'SELECT department_id AS id, department.name AS department, SUM(salary) AS budget FROM role JOIN department ON role.department_id = department.id GROUP BY department_id';
+//     db.query(sel, (err, results) => {
+//         if(err) throw err;
+//         console.table(results);
+//         startPrompt();
+//     });
+// };
+
+//function to view department budgets
 function viewDeptBudget(){
-    console.log('Showing budget by departments...\n');
-    let sel = 'SELECT department_id AS id, department.name AS department, SUM(salary) AS budget FROM role JOIN department ON role.department_id = department.id GROUP BY department_id';
-    db.query(sel, (err, results) => {
+    let deptArray = [];
+    let qry = 'SELECT * FROM department';
+    db.query(qry, (err, results) => {
         if(err) throw err;
-        console.table(results);
-        startPrompt();
+        inquirer.prompt([
+            {
+                name:'deptName',
+                type: 'list',
+                message: "Select the department which you want to view the budgets?",
+                choices: function () {
+                    for(let i = 0; i< results.length; i++){
+                        deptArray.push(results[i].name);
+                    }
+                    //console.log(deptArray);
+                    return deptArray;
+                    
+                },
+            },
+        ]).then((answer) => {
+            let deptID = deptArray.indexOf(answer.deptName) + 1;
+            let deptName =answer.deptName;
+            //console.log(deptID);
+            let qry2 = 'SELECT  SUM(salary) AS budget FROM role WHERE department_id = ?';
+            db.query(qry2, deptID, (err, results2) => {
+                if(err) throw err;
+                console.log(`The budget of ${deptName}`);
+                console.table(results2)
+                startPrompt();
+            });
+        });
     });
-};
+}
+
 
 
 

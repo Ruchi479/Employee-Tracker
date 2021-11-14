@@ -447,6 +447,29 @@ function DeleteEmployee(){
     });
 }
 
+//function to view employee by department
+function viewByDept(){
+    console.log('Showing employee by departments...\n');
+    let sel = 'SELECT employee.first_name, employee.last_name, department.name AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id';
+    db.query(sel, (err, results) => {
+        if(err) throw err;
+        console.table(results);
+        startPrompt();
+    });
+};
+
+//function to view employee by Manager
+function viewByManager(){
+    console.log('Showing employee by Manager...\n');
+    let sel = 'SELECT employee.first_name, employee.last_name, CONCAT (manager.first_name, " ", manager.last_name) AS Manager FROM employee LEFT JOIN employee manager ON employee.manager_id = manager.id';
+    db.query(sel, (err, results) => {
+        if(err) throw err;
+        console.table(results);
+        startPrompt();
+    });
+};
+
+
 
 
         

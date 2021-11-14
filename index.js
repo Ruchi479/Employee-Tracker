@@ -36,8 +36,15 @@ function startPrompt(){
                 "Add a Role",
                 "Add a Department",
                 "Add an Employee",
-                "Update an Employee role",
-                "Quit",
+                "Update an Employee Role",
+                "Update an Employee Manager",
+                "View Employees By Department",
+                "View Employees By Manager",
+                "Delete a Department",
+                "Delete a Role",
+                "Delete an Employee",
+                "View Department Budgets",
+                "Quit"
             ],
         }
     ]).then((answer) => {
@@ -60,8 +67,29 @@ function startPrompt(){
             case "Add an Employee":
                 addEmployee();
                 break;
-            case "Update an Employee role":
+            case "Update an Employee Role":
                 updateEmployeeRole();
+                break;
+            case "Update an Employee Manager":
+                updateEmployeeManager();
+                break;
+            case "View Employees By Department":
+                viewByDept();
+                break;
+            case "View Employees By Manager":
+                viewByManager();
+                break;
+            case "Delete a Department":
+                deleteDepartment();
+                break;
+            case "Delete a Role":
+                DeleteRole();
+                break;
+            case "Delete an Employee":
+                DeleteEmployee();
+                break;
+            case "View Department Budgets":
+                viewDeptBudget();
                 break;
             case "Quit":
                 exitPrompt();
@@ -219,6 +247,7 @@ function addEmployee(){
         });
     });
 }
+
 
         
    
